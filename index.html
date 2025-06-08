@@ -11,7 +11,6 @@
             padding: 20px;
             background-color: #f0f0f0;
             color: #333;
-            /* 以下のプロパティは、テキスト選択などを防ぐために残しておくと良いでしょう */
             -webkit-touch-callout: none; /* iOS Safari */
             -webkit-user-select: none;   /* Chrome/Safari/Opera */
             -khtml-user-select: none;    /* Konqueror */
@@ -67,14 +66,20 @@
             margin-bottom: 0;
         }
 
-        .item-row input[type="text"], /* type="text" に変更 */
-        .item-row input[type="number"] { /* quantity-inputはnumberのまま */
+        .item-row input[type="text"],
+        .item-row input[type="number"] {
             flex-grow: 1;
             padding: 8px;
             border: 1px solid #ccc;
             border-radius: 5px;
             font-size: 1em;
-            -moz-appearance: textfield; /* Firefox hides arrows (if type="number" was used) */
+            -moz-appearance: textfield;
+        }
+
+        /* 読み取り専用の個数フィールドのスタイル */
+        .item-row .quantity-input[readonly] {
+            background-color: #e9e9e9; /* 編集不可であることが視覚的にわかるように */
+            cursor: default;
         }
 
         .item-row .price-input {
@@ -141,14 +146,14 @@
                 現在のお買い物金額: <span id="total-amount">0</span> 円
             </div>
             <div class="tax-included-total">
-                （消費税8%込み: <span id="tax-included-amount">0</span> 円）
+                消費税8%込み: <span id="tax-included-amount">0</span> 円
             </div>
         </div>
 
         <div class="item-list" id="item-list">
             <div class="item-row">
                 <input type="text" class="price-input" value="0" placeholder="単価" min="0" inputmode="decimal" pattern="[0-9.]*">
-                <input type="number" class="quantity-input" value="1" min="1">
+                <input type="number" class="quantity-input" value="1" min="1" readonly>
                 <div class="quantity-buttons">
                     <button class="minus-button">-1</button>
                     <button class="plus-button">+1</button>
@@ -160,12 +165,12 @@
     </div>
 
     <script>
-        // ズーム無効化のためのイベントリスナー（ここから追加/修正）
+        // ズーム無効化のためのイベントリスナー
         document.addEventListener('touchstart', function(event) {
             if (event.touches.length > 1) { // 2本指以上でのタッチ（ピンチ操作）
                 event.preventDefault();
             }
-        }, { passive: false }); // passive: false を指定して preventDefault() を有効にする
+        }, { passive: false });
 
         let lastTouchEnd = 0;
         document.addEventListener('touchend', function (event) {
@@ -175,7 +180,6 @@
             }
             lastTouchEnd = now;
         }, false);
-        // ズーム無効化のためのイベントリスナー（ここまで追加/修正）
 
 
         const itemList = document.getElementById('item-list');
@@ -220,15 +224,8 @@
             // 単価フィールドの入力中に合計を更新
             priceInput.addEventListener('input', updateTotals);
 
-            // 個数フィールドの入力中に合計を更新（1未満にならないように制御）
-            quantityInput.addEventListener('input', () => {
-                if (parseInt(quantityInput.value) < 1 || isNaN(parseInt(quantityInput.value))) {
-                    quantityInput.value = 1;
-                }
-                updateTotals();
-            });
-
-            // -1 ボタンのイベントリスナー
+            // 個数フィールドは読み取り専用になるため、直接のinputイベントは不要
+            // ただし、+1/-1ボタンによる変更時にupdateTotalsを呼び出す
             minusButton.addEventListener('click', () => {
                 let currentQuantity = parseInt(quantityInput.value) || 0;
                 if (currentQuantity > 1) {
@@ -237,7 +234,6 @@
                 }
             });
 
-            // +1 ボタンのイベントリスナー
             plusButton.addEventListener('click', () => {
                 let currentQuantity = parseInt(quantityInput.value) || 0;
                 quantityInput.value = currentQuantity + 1;
@@ -251,7 +247,7 @@
             itemRow.classList.add('item-row');
             itemRow.innerHTML = `
                 <input type="text" class="price-input" value="0" placeholder="単価" min="0" inputmode="decimal" pattern="[0-9.]*">
-                <input type="number" class="quantity-input" value="1" min="1">
+                <input type="number" class="quantity-input" value="1" min="1" readonly>
                 <div class="quantity-buttons">
                     <button class="minus-button">-1</button>
                     <button class="plus-button">+1</button>
