@@ -78,6 +78,12 @@
             box-sizing: border-box; /* paddingとborderをwidthに含める */
         }
 
+        /* 読み取り専用の個数フィールドのスタイル */
+        .item-row .quantity-input[readonly] {
+            background-color: #e9e9e9; /* 編集不可であることが視覚的にわかるように */
+            cursor: default;
+        }
+
         .item-row .price-input {
             /* 単価の幅を柔軟に */
             flex-grow: 1; /* 残りスペースを埋める */
@@ -110,7 +116,6 @@
             background-color: #e9e9e9;
             color: #333;
             cursor: pointer;
-            /* margin-left: 5px; -> gapを使うため不要に */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -211,7 +216,7 @@
     <script>
         // ズーム無効化のためのイベントリスナー
         document.addEventListener('touchstart', function(event) {
-            if (event.touches.length > 1) { // 2本指以上でのタッチ（ピンチ操作）
+            if (event.touches.length > 1) {
                 event.preventDefault();
             }
         }, { passive: false });
@@ -219,5 +224,120 @@
         let lastTouchEnd = 0;
         document.addEventListener('touchend', function (event) {
             const now = (new Date()).getTime();
-            if (now - lastTouchEnd <= 300) { // 300ms 以内の2回目のタップ
-                event.preventDefault
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+
+
+        const itemList = document.getElementById('item-list');
+        const addItemButton = document.getElementById('add-item');
+        const totalAmountSpan = document.getElementById('total-amount');
+        const taxIncludedAmountSpan = document.getElementById('tax-included-amount');
+        const TAX_RATE = 0.08; // 8% 消費税
+
+        // 金額を更新する関数
+        function updateTotals() {
+            let total = 0;
+            const itemRows = itemList.querySelectorAll('.item-row');
+
+            itemRows.forEach(row => {
+                const price = parseFloat(row.querySelector('.price-input').value) || 0;
+                const quantity = parseInt(row.querySelector('.quantity-input').value) || 0;
+                total += price * quantity;
+            });
+
+            const taxIncludedTotal = total * (1 + TAX_RATE);
+
+            totalAmountSpan.textContent = Math.round(total);
+            taxIncludedAmountSpan.textContent = Math.round(taxIncludedTotal);
+        }
+
+        /**
+         * 入力フィールドとボタンにイベントリスナーを設定する共通関数
+         * @param {HTMLInputElement} priceInput - 単価入力フィールド
+         * @param {HTMLInputElement} quantityInput - 個数入力フィールド
+         * @param {HTMLButtonElement} minusButton - -1ボタン
+         * @param {HTMLButtonElement} plusButton - +1ボタン
+         */
+        function setupInputListeners(priceInput, quantityInput, minusButton, plusButton) {
+            // 単価フィールドにフォーカスが当たった時、値が0なら空にする
+            priceInput.addEventListener('focus', () => {
+                if (priceInput.value === '0') {
+                    priceInput.value = '';
+                }
+            });
+
+            // 単価フィールドからフォーカスが外れた時、値が空なら0に戻す
+            priceInput.addEventListener('blur', () => {
+                if (priceInput.value === '') {
+                    priceInput.value = '0';
+                }
+            });
+
+            // 単価フィールドの入力中に合計を更新
+            priceInput.addEventListener('input', updateTotals);
+
+            // -1 ボタンのイベントリスナー
+            minusButton.addEventListener('click', () => {
+                let currentQuantity = parseInt(quantityInput.value) || 0;
+                if (currentQuantity > 1) { // 個数が1より大きい場合のみ減らす
+                    quantityInput.value = currentQuantity - 1;
+                    updateTotals(); // 金額を更新
+                }
+            });
+
+            // +1 ボタンのイベントリスナー
+            plusButton.addEventListener('click', () => {
+                let currentQuantity = parseInt(quantityInput.value) || 0;
+                quantityInput.value = currentQuantity + 1;
+                updateTotals(); // 金額を更新
+            });
+        }
+
+        // 新しい購入品行を作成する関数
+        function createNewItemRow() {
+            const itemRow = document.createElement('div');
+            itemRow.classList.add('item-row');
+            itemRow.innerHTML = `
+                <input type="text" class="price-input" value="0" placeholder="単価" min="0" inputmode="decimal" pattern="[0-9.]*">
+                <input type="number" class="quantity-input" value="1" min="1" readonly>
+                <div class="quantity-buttons">
+                    <button class="minus-button">-1</button>
+                    <button class="plus-button">+1</button>
+                </div>
+            `;
+
+            // 追加された新しい行の要素を取得し、イベントリスナーを設定
+            const priceInput = itemRow.querySelector('.price-input');
+            const quantityInput = itemRow.querySelector('.quantity-input');
+            const minusButton = itemRow.querySelector('.minus-button');
+            const plusButton = itemRow.querySelector('.plus-button');
+
+            // ★ここで新しい行の要素に対して setupInputListeners を呼び出す
+            setupInputListeners(priceInput, quantityInput, minusButton, plusButton);
+
+            return itemRow;
+        }
+
+        // 初期ロード時に存在する最初の行のイベントリスナーを設定
+        const initialPriceInput = itemList.querySelector('.price-input');
+        const initialQuantityInput = itemList.querySelector('.quantity-input');
+        const initialMinusButton = itemList.querySelector('.minus-button');
+        const initialPlusButton = itemList.querySelector('.plus-button');
+        // ★最初の行の要素に対しても setupInputListeners を呼び出す
+        setupInputListeners(initialPriceInput, initialQuantityInput, initialMinusButton, initialPlusButton);
+
+        // 「行追加」ボタンのイベントリスナー
+        addItemButton.addEventListener('click', () => {
+            const newItemRow = createNewItemRow();
+            itemList.appendChild(newItemRow);
+            updateTotals(); // 新しい行が追加されたので合計を更新
+        });
+
+        // 最初の金額表示を更新
+        updateTotals();
+    </script>
+</body>
+</html>
