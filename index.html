@@ -296,7 +296,8 @@
             // -1 ボタンのイベントリスナー
             minusButton.addEventListener('click', () => {
                 let currentQuantity = parseInt(quantityInput.value) || 0;
-                if (currentQuantity > 1) { // 個数が1より大きい場合のみ減らす
+                // 個数が0より大きい場合のみ減らす
+                if (currentQuantity > 0) {
                     quantityInput.value = currentQuantity - 1;
                     updateTotals(); // 金額を更新
                 }
