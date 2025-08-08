@@ -8,7 +8,7 @@
         body {
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             margin: 0;
-            padding-bottom: 15px; /* 下方向のpaddingのみ残し、ヘッダーが全幅になるように */
+            padding-bottom: 15px;
             background-color: #f0f0f0;
             color: #333;
             /* タッチ操作時の選択・ズーム防止 */
@@ -27,32 +27,32 @@
             padding: 15px;
             text-align: center;
             /* ヘッダーを画面上部に固定 */
-            position: sticky;
-            top: 0; /* 画面の上端に固定 */
-            width: 100%; /* 親要素（body）の全幅に広げる */
-            box-sizing: border-box; /* paddingを含めてwidth: 100%にする */
-            z-index: 1000; /* 他の要素の上に表示されるように */
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* スクロール時に少し影をつけて区別しやすくする */
+            position: fixed; /* stickyからfixedに変更 */
+            top: 0;
+            width: 100%;
+            box-sizing: border-box;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         /* 税込金額の表示スタイル (強調) */
         .tax-included-total {
-            margin-bottom: 10px; /* 下に少し余白を追加 */
-            font-size: 1.5em; /* フォントサイズを大きくしました */
-            font-weight: bold; /* 太字にしました */
-            color: white; /* 色を白に設定し直しました */
+            margin-bottom: 10px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
         }
 
         /* 税抜金額の表示スタイル (少し小さく) */
         .current-total {
-            font-size: 1.1em; /* フォントサイズを調整しました */
-            color: rgba(255, 255, 255, 0.8); /* 少し薄い色にしました */
+            font-size: 1.1em;
+            color: rgba(255, 255, 255, 0.8);
         }
 
         /* メインコンテンツのコンテナ */
         .container {
             max-width: 400px;
-            margin: 0 auto; /* 中央寄せ */
+            margin: 0 auto;
             background-color: #fff;
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -68,7 +68,7 @@
         .item-row {
             display: flex;
             align-items: center;
-            gap: 8px; /* 各要素間の隙間 */
+            gap: 8px;
             margin-bottom: 10px;
             padding: 8px;
             border: 1px solid #eee;
@@ -86,35 +86,35 @@
             border: 1px solid #ccc;
             border-radius: 5px;
             font-size: 1em;
-            -moz-appearance: textfield; /* Firefoxでnumber inputの矢印を非表示 */
-            box-sizing: border-box; /* paddingを含めてwidth: 100%にする */
+            -moz-appearance: textfield;
+            box-sizing: border-box;
         }
 
         /* 読み取り専用の個数フィールドのスタイル */
         .item-row .quantity-input[readonly] {
-            background-color: #e9e9e9; /* 編集不可であることが視覚的にわかるように */
+            background-color: #e9e9e9;
             cursor: default;
         }
 
         .item-row .price-input {
-            flex-grow: 1; /* 残りスペースを埋める */
-            flex-shrink: 1; /* 必要に応じて縮小 */
-            flex-basis: 70px; /* 基準サイズ (最小でもこれくらい) */
-            max-width: 100px; /* 最大幅 */
-            text-align: right; /* 数字なので右寄せ */
+            flex-grow: 1;
+            flex-shrink: 1;
+            flex-basis: 70px;
+            max-width: 100px;
+            text-align: right;
         }
 
         .item-row .quantity-input {
-            width: 40px; /* 個数の幅を少し小さく */
-            flex-shrink: 0; /* 縮小させない */
+            width: 40px;
+            flex-shrink: 0;
             text-align: center;
         }
 
         .quantity-buttons {
             display: flex;
-            margin-left: auto; /* 右寄せ */
-            gap: 5px; /* ボタン間の隙間 */
-            flex-shrink: 0; /* 縮小させない */
+            margin-left: auto;
+            gap: 5px;
+            flex-shrink: 0;
         }
 
         .quantity-buttons button {
@@ -130,19 +130,24 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            -webkit-tap-highlight-color: transparent; /* タップ時のハイライトを非表示 */
+            -webkit-tap-highlight-color: transparent;
         }
 
         .quantity-buttons button:active {
             background-color: #d0d0d0;
         }
 
-        .add-item-button {
-            display: block;
-            width: calc(100% - 30px); /* containerのpaddingに合わせて調整 */
-            padding: 12px 15px;
+        .action-buttons {
+            display: flex;
+            justify-content: space-around; /* ボタンを均等に配置 */
+            width: calc(100% - 30px);
             margin: 15px auto;
-            background-color: #28a745;
+            gap: 10px; /* ボタン間の隙間 */
+        }
+
+        .action-buttons button {
+            flex-grow: 1; /* ボタンが利用可能なスペースを埋めるように拡張 */
+            padding: 12px 15px;
             color: white;
             border: none;
             border-radius: 8px;
@@ -152,14 +157,27 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        .add-item-button {
+            background-color: #28a745;
+        }
+
         .add-item-button:active {
             background-color: #218838;
+        }
+
+        .sort-button {
+            background-color: #ffc107; /* ソートボタンの色を黄色に */
+            color: #333; /* 文字色を黒に */
+        }
+
+        .sort-button:active {
+            background-color: #e0a800;
         }
 
         /* 小画面向けのメディアクエリ (iPhone SEなど、さらに狭い画面用) */
         @media (max-width: 375px) {
             body {
-                padding-bottom: 10px; /* 下方向のpaddingをさらに減らす */
+                padding-bottom: 10px;
             }
             .container {
                 border-radius: 5px;
@@ -190,9 +208,12 @@
                 height: 32px;
                 font-size: 1.1em;
             }
-            .add-item-button {
+            .action-buttons {
                 width: calc(100% - 20px);
                 margin: 10px auto;
+                gap: 8px;
+            }
+            .action-buttons button {
                 padding: 10px 12px;
                 font-size: 1em;
             }
@@ -200,13 +221,10 @@
     </style>
 </head>
 <body>
-    <!-- ヘッダーをコンテナの外に移動して、bodyに直接配置 -->
     <div class="header">
-        <!-- 税込金額を先に、強調して表示 -->
         <div class="tax-included-total">
-            合計(税率8%): <span id="tax-included-amount">0</span> 円
+            合計(税率8%): <span id="tax-included-amount">0.0</span> 円
         </div>
-        <!-- 税抜金額をその下に表示 -->
         <div class="current-total">
             税抜額: <span id="total-amount">0</span> 円
         </div>
@@ -224,7 +242,10 @@
             </div>
         </div>
 
-        <button class="add-item-button" id="add-item">行追加</button>
+        <div class="action-buttons">
+            <button class="add-item-button" id="add-item">行追加</button>
+            <button class="sort-button" id="sort-items">単価でソート</button>
+        </div>
     </div>
 
     <script>
@@ -244,12 +265,14 @@
             lastTouchEnd = now;
         }, false);
 
-
         const itemList = document.getElementById('item-list');
         const addItemButton = document.getElementById('add-item');
+        const sortItemsButton = document.getElementById('sort-items'); // ソートボタンの要素を取得
         const totalAmountSpan = document.getElementById('total-amount');
         const taxIncludedAmountSpan = document.getElementById('tax-included-amount');
         const TAX_RATE = 0.08; // 8% 消費税
+
+        let sortOrder = 'asc'; // ソート順序を管理 (asc: 昇順, desc: 降順)
 
         // 金額を更新する関数
         function updateTotals() {
@@ -264,8 +287,10 @@
 
             const taxIncludedTotal = total * (1 + TAX_RATE);
 
+            // 税抜額は整数で表示
             totalAmountSpan.textContent = Math.round(total);
-            taxIncludedAmountSpan.textContent = Math.round(taxIncludedTotal);
+            // 税込額は小数点第1位まで表示
+            taxIncludedAmountSpan.textContent = taxIncludedTotal.toFixed(1);
         }
 
         /**
@@ -351,6 +376,29 @@
             updateTotals(); // 新しい行が追加されたので合計を更新
         });
 
+        // 「単価でソート」ボタンのイベントリスナー
+        sortItemsButton.addEventListener('click', () => {
+            const itemRows = Array.from(itemList.querySelectorAll('.item-row'));
+
+            itemRows.sort((a, b) => {
+                const priceA = parseFloat(a.querySelector('.price-input').value) || 0;
+                const priceB = parseFloat(b.querySelector('.price-input').value) || 0;
+
+                if (sortOrder === 'asc') {
+                    return priceA - priceB;
+                } else {
+                    return priceB - priceA;
+                }
+            });
+
+            // 現在のリストをクリアし、ソートされた要素を再追加
+            itemList.innerHTML = '';
+            itemRows.forEach(row => itemList.appendChild(row));
+
+            // ソート順序をトグル
+            sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+        });
+
         // 最初の金額表示を更新
         updateTotals();
 
@@ -360,7 +408,7 @@
             const containerElement = document.querySelector('.container');
             if (headerElement && containerElement) {
                 const headerHeight = headerElement.offsetHeight;
-                containerElement.style.marginTop = `${headerHeight}px`;
+                containerElement.style.marginTop = `${headerHeight + 15}px`; // ヘッダーの高さ + 少し余白
             }
         }
 
